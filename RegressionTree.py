@@ -1,7 +1,7 @@
 import numpy as np
 
 # TODO Remove if not used anywhere
-feature_id_name_dict = {"CompPrice": 0, "Income": 1,	"Advertising": 2, "Population": 3, "Price":4, "ShelveLoc": 5,	"Age": 6, "Education": 7, "Urban": 8, "US": 9}
+feature_id_name_dict = {"Sale":0, "CompPrice": 1, "Income": 2,	"Advertising": 3, "Population": 4, "Price": 5, "ShelveLoc": 6,	"Age": 7, "Education": 8, "Urban": 9, "US": 10}
 
 
 # Pre-process to replace Bad with 0, Medium with 1 and Good with 2.
@@ -33,6 +33,7 @@ def get_data():
     return train_data, test_data
 
 
+# TODO: I think this is not required. Remove afterwards.
 # Making it a dictionary and extract feature values and y_values i.e. Sales
 def get_feature_values(train_data):
     feature_values = {}
@@ -45,15 +46,12 @@ def get_feature_values(train_data):
     return feature_values, y_values
 
 
-def find_split_point(train_data):
+def find_split_point(data, features):
     rss = {}
-
-    feature_values, y_values = get_feature_values(train_data)
-
-    features = feature_values.keys()
+    y_values = [row[0] for row in data]
 
     for feature in features:
-        x_values = feature_values[feature]
+        x_values = [row[feature] for row in data]
 
         n = len(x_values)
         for i in range(1, n):
@@ -63,10 +61,10 @@ def find_split_point(train_data):
             y_r_2 = []
             for j in range(n):
                 if x_values[j] < x_values[i]:
-                    r1.append(train_data[j])
+                    r1.append(data[j])
                     y_r_1.append(y_values[j])
                 else:
-                    r2.append(train_data[j])
+                    r2.append(data[j])
                     y_r_2.append(y_values[j])
 
             y_1_hat = sum(y_r_1)/len(y_r_1) if len(y_r_1) > 0 else 0
@@ -86,7 +84,7 @@ def find_split_point(train_data):
             elif rss[feature][0] > r:
                 rss[feature] = (r, x_values[i], r1, r2)
 
-    key_min_rss = min(rss, key = rss.get)
+    key_min_rss = min(rss, key=rss.get)
     return key_min_rss, rss[key_min_rss]
 
 
