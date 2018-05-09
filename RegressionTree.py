@@ -63,7 +63,7 @@ def find_split_point(data, features):
 
     for feature in features:
         x_values = [row[feature] for row in data]
-
+        print(len(x_values))
         n = len(x_values)
         for i in range(1, n):
             r1 = []
@@ -83,13 +83,10 @@ def find_split_point(data, features):
 
             r = rss_1 + rss_2
 
-            left_region = Region(data=r1, rss= rss_1)
-            right_region = Region(data=r2, rss=rss_2)
-
             if feature not in rss:
-                rss[feature] = (r, x_values[i], left_region, right_region)
-            elif rss[feature][0] > r:
-                rss[feature] = (r, x_values[i], left_region, right_region)
+                rss[feature] = (r, x_values[i], r1, rss_1, r2, rss_2)
+            elif  rss[feature][0] > r:
+                rss[feature] = (r, x_values[i], r1, rss_1, r2, rss_2)
 
     key_min_rss = min(rss, key=rss.get)
     return key_min_rss, rss[key_min_rss]
