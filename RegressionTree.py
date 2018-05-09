@@ -33,6 +33,16 @@ def get_data():
     return train_data, test_data
 
 
+def calc_rss(y_values):
+    rss = 0
+    y_hat = sum(y_values)/len(y_values) if len(y_values) > 0 else 0
+
+    for y in y_values:
+        rss += (y - y_hat)**2
+
+    return rss
+
+
 # TODO: I think this is not required. Remove afterwards.
 # Making it a dictionary and extract feature values and y_values i.e. Sales
 def get_feature_values(train_data):
@@ -67,15 +77,8 @@ def find_split_point(data, features):
                     r2.append(data[j])
                     y_r_2.append(y_values[j])
 
-            y_1_hat = sum(y_r_1)/len(y_r_1) if len(y_r_1) > 0 else 0
-            y_2_hat = sum(y_r_2)/len(y_r_2) if len(y_r_2) > 0 else 0
-
-            # TODO: Can modify this using reduce.
-            s_1 = [(y - y_1_hat)**2 for y in y_r_1]
-            rss_1 = sum(s_1)
-
-            s_2 = [(y - y_2_hat)**2 for y in y_r_2]
-            rss_2 = sum(s_2)
+            rss_1 = calc_rss(y_r_1)
+            rss_2 = calc_rss(y_r_2)
 
             r = rss_1 + rss_2
 

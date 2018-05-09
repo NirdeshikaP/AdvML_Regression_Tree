@@ -14,6 +14,7 @@ regions.append(root)
 for region in regions:
     #  print('Splitting region ' + str(region.region_id))
     split_point_feature, split_details = find_split_point(region.data, input_features)
+    print(split_details[0])
     region.split_feature = split_point_feature
     region.split_point = split_details[1]
     region.left_region = Region(data=split_details[2])
@@ -24,7 +25,7 @@ for region in regions:
     leaves.append(region.right_region)
     regions.append(region.left_region)
     regions.append(region.right_region)
-    if len(leaves) == 10:
+    if len(leaves) == 2:
         break
 
 l = [leaf.region_id for leaf in leaves]
