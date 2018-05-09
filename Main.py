@@ -12,7 +12,7 @@ root_rss = calc_rss(y_values)
 root = Region(data=train_data, rss=root_rss)
 leaves.append(root)
 
-while len(leaves) <= 10:
+while len(leaves) <= 25:
     current_leaves = leaves[:] # current_leaves = leaves does not work because it copies reference and changes made to leaves are shown in current_leaves as well.
     temp = []
     temp_rss_reduction = 0
@@ -21,6 +21,9 @@ while len(leaves) <= 10:
     print('Current number of leaves: ' + str(len(current_leaves)))
 
     for region in current_leaves:
+        # if there is no data, then there is no need for split
+        if len(region.data) <= 1:
+            continue
         split_point_feature, split_details = find_split_point(region.data, input_features)
         split_rss = split_details[0]
 
