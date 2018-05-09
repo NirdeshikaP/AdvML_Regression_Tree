@@ -25,17 +25,17 @@ while len(leaves) <= 10:
         split_rss = split_details[0]
 
         region.split_feature = split_point_feature
+        region.split_point = split_details[1]
+        region.left_region = Region(data=split_details[2], rss=split_details[3])
+        region.right_region = Region(data=split_details[4], rss=split_details[5])
 
         if region.rss > split_rss:
             if temp_rss_reduction <= region.rss - split_rss:
                 temp_rss_reduction = region.rss - split_rss
                 split_region = region
-                split_region_details = split_details
 
     split_region.data = None
-    split_region.split_point = split_details[1]
-    split_region.left_region = Region(data=split_details[2], rss=split_details[3])
-    split_region.right_region = Region(data=split_details[4], rss=split_details[5])
+
     leaves.remove(split_region)
     leaves.append(split_region.left_region)
     leaves.append(split_region.right_region)
