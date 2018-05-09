@@ -1,4 +1,5 @@
 import numpy as np
+from Region import Region
 
 # TODO Remove if not used anywhere
 feature_id_name_dict = {"Sale":0, "CompPrice": 1, "Income": 2,	"Advertising": 3, "Population": 4, "Price": 5, "ShelveLoc": 6,	"Age": 7, "Education": 8, "Urban": 9, "US": 10}
@@ -82,10 +83,13 @@ def find_split_point(data, features):
 
             r = rss_1 + rss_2
 
+            left_region = Region(data=r1, rss= rss_1)
+            right_region = Region(data=r2, rss=rss_2)
+
             if feature not in rss:
-                rss[feature] = (r, x_values[i], r1, r2)
+                rss[feature] = (r, x_values[i], left_region, right_region)
             elif rss[feature][0] > r:
-                rss[feature] = (r, x_values[i], r1, r2)
+                rss[feature] = (r, x_values[i], left_region, right_region)
 
     key_min_rss = min(rss, key=rss.get)
     return key_min_rss, rss[key_min_rss]
