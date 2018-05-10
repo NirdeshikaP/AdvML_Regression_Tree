@@ -1,6 +1,6 @@
 from Main import *
+import matplotlib.pyplot as mpl
 
-data = test_data
 
 def predict(tree, data_row):
     if tree.isLeaf:
@@ -9,7 +9,6 @@ def predict(tree, data_row):
         return predict(tree.left_region, data_row)
     else:
         return predict(tree.right_region, data_row)
-
 
 
 def calculate_mse(data):
@@ -25,30 +24,48 @@ def calculate_mse(data):
     return mse
 
 
-def printCondition_preorder(tree = root):
+def print_condition_preorder(tree=root):
     if tree.isLeaf:
         print(tree.region_id, tree.split_feature_id, tree.split_point, tree.isLeaf, tree.data)
         return
 
     print(tree.region_id, tree.split_feature_id, tree.split_point, tree.isLeaf)
 
-    printCondition_preorder(tree.left_region)
-    printCondition_preorder(tree.right_region)
+    print_condition_preorder(tree.left_region)
+    print_condition_preorder(tree.right_region)
 
 
-def printCondition_inorder(tree = root):
+def print_condition_inorder(tree=root):
     if tree.isLeaf:
         print(tree.region_id, tree.split_feature_id, tree.split_point, tree.isLeaf, tree.data)
         return
 
-    printCondition_inorder(tree.left_region)
+    print_condition_inorder(tree.left_region)
     print(tree.region_id, tree.split_feature_id, tree.split_point, tree.isLeaf)
 
-    printCondition_inorder(tree.right_region)
+    print_condition_inorder(tree.right_region)
 
+
+data = test_data
+
+
+initialize()
+build_tree()
 calculate_mse(data)
-print('**********Preorder traversal of tree************')
-printCondition_preorder()
-print('**********Inorder traversal of tree************')
-printCondition_inorder()
+x = []
+y = []
+for a in np.arange(0.1,1,0.1):
+    print ('alpha = '+ str(a))
+    initialize()
+    build_tree(with_pruning=True, alpha=a)
+    y.append(calculate_mse(data))
+    x.append(a)
 
+# mpl.plot(y)
+# mpl.show()
+
+# print('**********Preorder traversal of tree************')
+# print_condition_preorder()
+# print('**********Inorder traversal of tree************')
+# print_condition_inorder()
+#

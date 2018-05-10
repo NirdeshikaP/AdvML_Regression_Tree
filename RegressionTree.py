@@ -1,5 +1,4 @@
 import numpy as np
-from Region import Region
 
 # TODO Remove if not used anywhere
 feature_id_name_dict = {"Sale":0, "CompPrice": 1, "Income": 2,	"Advertising": 3, "Population": 4, "Price": 5, "ShelveLoc": 6,	"Age": 7, "Education": 8, "Urban": 9, "US": 10}
@@ -28,8 +27,8 @@ def get_data():
     np.random.seed(10)
     np.random.shuffle(data)
 
-    train_data = data[0:300]
-    test_data = data[300:]
+    train_data = data[0:275]
+    test_data = data[275:]
 
     return train_data, test_data
 
@@ -40,6 +39,16 @@ def calc_rss(y_values):
 
     for y in y_values:
         rss += (y - y_hat)**2
+
+    return rss
+
+
+def calc_rss_with_pruning(y_values, alpha, number_of_leaves):
+    rss = 0
+    y_hat = sum(y_values)/len(y_values) if len(y_values) > 0 else 0
+
+    for y in y_values:
+        rss += (y - y_hat)**2 + (alpha*number_of_leaves)
 
     return rss
 
@@ -57,7 +66,7 @@ def get_feature_values(train_data):
     return feature_values, y_values
 
 
-def find_split_point(data, features):
+def find_split_point(data, features, with_pruning=False, alpha=0.0, number_of_leaves=0):
     rss = {}
     y_values = [row[0] for row in data]
 
@@ -78,8 +87,12 @@ def find_split_point(data, features):
                     r2.append(data[j])
                     y_r_2.append(y_values[j])
 
-            rss_1 = calc_rss(y_r_1)
-            rss_2 = calc_rss(y_r_2)
+            if with_pruning:
+                rss_1 = calc_rss_with_pruning(y_r_1, alpha, number_of_leaves)
+                rss_2 = calc_rss_with_pruning(y_r_2, alpha, number_of_leaves)
+            else:
+                rss_1 = calc_rss(y_r_1)
+                rss_2 = calc_rss(y_r_2)
 
             r = rss_1 + rss_2
 
