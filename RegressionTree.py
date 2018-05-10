@@ -19,7 +19,7 @@ def get_feature_id_for_name(feature_name):
 
 
 def read_csv():
-    data = np.genfromtxt('Carseats.csv', delimiter=',', names = True, converters={6: lambda s: convertors()[0].get(s), 9: lambda s: convertors()[1].get(s), 10: lambda s: convertors()[1].get(s)})
+    data = np.genfromtxt('Carseats.csv', delimiter=',', names=True, converters={6: lambda s: convertors()[0].get(s), 9: lambda s: convertors()[1].get(s), 10: lambda s: convertors()[1].get(s)})
     return data
 
 
