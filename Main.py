@@ -1,23 +1,24 @@
 from RegressionTree import *
 from Region import Region
 
-leaves = []
-train_data, test_data = get_data()
-
 input_features = feature_id_name_dict.values()
 input_features.remove(0)  # Removing 'Sales'
+#
+# y_values = [row[0] for row in train_data]
+# root_rss = calc_rss(y_values)
+# root = Region(data=train_data, rss=root_rss)
 
-y_values = [row[0] for row in train_data]
-root_rss = calc_rss(y_values)
-root = Region(data=train_data, rss=root_rss)
+def build_root(data):
+    y_values = [row[0] for row in data]
+    root_rss = calc_rss(y_values)
+    root = Region(data=data, rss=root_rss)
+    return root
 
-def initialize():
-    leaves[:] = []
-    root.data = train_data
+
+def build_tree(root, with_pruning=False, alpha=0.0):
+    leaves = []
     leaves.append(root)
 
-
-def build_tree(with_pruning=False, alpha=0.0):
     while len(leaves) < 30:
         current_leaves = leaves[:]  # current_leaves = leaves does not work because it copies reference and changes made to leaves are shown in current_leaves as well.
         temp_rss_reduction = 0

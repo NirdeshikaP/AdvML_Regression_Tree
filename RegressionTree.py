@@ -22,15 +22,19 @@ def read_csv():
     return data
 
 
-def get_data():
+def get_data(for_boot_strapping=False, number_of_points_in_each_sample=0, number_of_samples=0):
     data = read_csv()
     np.random.seed(10)
     np.random.shuffle(data)
-
     train_data = data[0:275]
     test_data = data[275:]
-
-    return train_data, test_data
+    train_samples = []
+    if for_boot_strapping:
+        for i in range(number_of_samples):
+            train_samples.append(np.random.choice(train_data, number_of_points_in_each_sample))
+        return train_samples, test_data
+    else:
+        return train_data, test_data
 
 
 def calc_rss(y_values):
@@ -103,7 +107,6 @@ def find_split_point(data, features, with_pruning=False, alpha=0.0, number_of_le
 
     key_min_rss = min(rss, key=rss.get)
     return key_min_rss, rss[key_min_rss]
-
 
 
 
