@@ -56,36 +56,34 @@ def calculate_mse(actual, expected):
 #
 #     print_condition_inorder(tree.right_region)
 
-# ******* BAGGING *******
-# for i in range(number_of_samples):
-#     root = build_root(train_data[i])
-#     build_tree(root)
-#     calculated_output = []
-#     for d in test_data:
-#         calculated_output.append(predict(root, d))
-#     actual.append(calculated_output)
-#
-# actual = map(sum, zip(*actual))
-# actual = [a/number_of_samples for a in actual]
-# calculate_mse(actual=actual, expected=expected)
+ # print('**********Preorder traversal of tree************')
+ #    print_condition_preorder()
+ #    print('**********Inorder traversal of tree************')
+ #    print_condition_inorder()
+
 def case_1_build_tree():
     train_data, test_data = get_data()
     expected = [d[0] for d in test_data]
     root = build_root(train_data)
-    build_tree(root)
+    input_features = get_input_features()
+    build_tree(root, input_features)
     actual = [predict(root, row) for row in test_data]
     calculate_mse(actual=actual, expected=expected)
+
 
 
 def case_2_build_tree_with_pruning():
     x = []
     y = []
-    for a in np.arange(0.1, 1, 0.1 ):
+
+    train_data, test_data = get_data()
+    expected = [d[0] for d in test_data]
+    input_features = get_input_features()
+
+    for a in np.arange(0.1, 1, 0.1):
         print ('alpha = '+ str(a))
-        train_data, test_data = get_data()
-        expected = [d[0] for d in test_data]
         root = build_root(train_data)
-        build_tree(root=root, with_pruning=True, alpha=a)
+        build_tree(root=root, input_features=input_features, with_pruning=True, alpha=a)
         actual = [predict(root, row) for row in test_data]
         y.append(calculate_mse(actual=actual, expected=expected))
         x.append(a)
@@ -100,10 +98,11 @@ def case_3_build_tree_with_bagging():
     train_data, test_data = get_data(for_boot_strapping=True, number_of_points_in_each_sample = number_of_points_in_each_sample, number_of_samples = number_of_samples)
     expected = [d[0] for d in test_data]
     actual = []
+    input_features = get_input_features()
 
     for i in range(number_of_samples):
         root = build_root(train_data[i])
-        build_tree(root)
+        build_tree(root, input_features)
         calculated_output = []
         for d in test_data:
             calculated_output.append(predict(root, d))
@@ -113,12 +112,31 @@ def case_3_build_tree_with_bagging():
     actual = [a/number_of_samples for a in actual]
     calculate_mse(actual=actual, expected=expected)
 
-# print('**********Preorder traversal of tree************')
-# print_condition_preorder()
-# print('**********Inorder traversal of tree************')
-# print_condition_inorder()
-#
+
+def case_4_build_tree_for_random_forest():
+    number_of_features = 5
+    train_data, test_data = get_data()
+    expected = [d[0] for d in test_data]
+    number_of_trees = 100
+    actual = []
+
+    for i in range(number_of_trees):
+        root = build_root(train_data)
+        input_features = get_input_features(for_random_forests=True, number_of_features=number_of_features)
+        build_tree(root=root, input_features=input_features)
+        calculated_output = []
+        for d in test_data:
+            calculated_output.append(predict(root,d))
+        actual.append(calculated_output)
+
+    actual = map(sum, zip(*actual))
+    actual = [a / number_of_trees for a in actual]
+    calculate_mse(actual=actual, expected=expected)
+
+
+
 
 # case_1_build_tree()
 # case_2_build_tree_with_pruning()
-case_3_build_tree_with_bagging()
+# case_3_build_tree_with_bagging()
+case_4_build_tree_for_random_forest()

@@ -1,8 +1,14 @@
 from RegressionTree import *
 from Region import Region
 
-input_features = feature_id_name_dict.values()
-input_features.remove(0)  # Removing 'Sales'
+
+def get_input_features(for_random_forests=False, number_of_features=10):
+    input_features = feature_id_name_dict.values()
+    input_features.remove(0)
+    if for_random_forests:
+        input_features = np.random.choice(input_features, number_of_features)
+    return input_features
+
 #
 # y_values = [row[0] for row in train_data]
 # root_rss = calc_rss(y_values)
@@ -15,7 +21,7 @@ def build_root(data):
     return root
 
 
-def build_tree(root, with_pruning=False, alpha=0.0):
+def build_tree(root, input_features, with_pruning=False, alpha=0.0):
     leaves = []
     leaves.append(root)
 
