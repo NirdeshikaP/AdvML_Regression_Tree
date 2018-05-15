@@ -1,6 +1,5 @@
 import numpy as np
 
-# TODO Remove if not used anywhere
 feature_id_name_dict = {"Sale":0, "CompPrice": 1, "Income": 2,	"Advertising": 3, "Population": 4, "Price": 5, "ShelveLoc": 6,	"Age": 7, "Education": 8, "Urban": 9, "US": 10}
 
 
@@ -11,10 +10,11 @@ def convertors():
     return  shelvloc_to_int, yes_no_int
 
 
-# TODO Remove if not used anywhere
-# Gets the id of the feature for the given feature name
-def get_feature_id_for_name(feature_name):
-    return feature_id_name_dict.get(feature_name)
+# Gets the feature name for the given feature id
+def get_name_for_id(feature_id):
+    for r in feature_id_name_dict:
+        if feature_id_name_dict.get(r) == feature_id:
+            return r
 
 
 def read_csv():
