@@ -1,8 +1,11 @@
-from Main import *
+from BuildTree import *
 import matplotlib.pyplot as mpl
 from scipy import stats
 from collections import Counter
 
+
+# Given the root of the tree and the test data row, it predicts the "Sales" value by traversing the tree according the
+# split conditions and returning the value from the leaf that falls into.
 def predict(tree, data_row):
     if tree.isLeaf:
         return tree.data
@@ -12,19 +15,7 @@ def predict(tree, data_row):
         return predict(tree.right_region, data_row)
 
 
-# def calculate_mse(data):
-#     n = len(data)
-#     sum = 0
-#     for d in data:
-#         value = predict(root, d)
-#         sum += (d[0] - value)**2
-#
-#     mse = sum/n
-#
-#     print('MSE on test data is: ' + str(mse))
-#     return mse
-
-
+# Calculate MSE by taking the mean of sum of the squares of the difference between the actual and expected value.
 def calculate_mse(actual, expected):
     n = len(actual)
     sum = 0
@@ -36,6 +27,11 @@ def calculate_mse(actual, expected):
     return mse
 
 
+# Pre-order traversal of the tree
+#               a
+#               /\
+#               b c
+# Pre-order is a b c
 def print_condition_preorder(tree):
     if tree.isLeaf:
         print(str(tree.region_id) + '[label = \"' + str(tree.data) + '\"]')
@@ -47,6 +43,11 @@ def print_condition_preorder(tree):
     print_condition_preorder(tree.right_region)
 
 
+# Inorder traversal of the tree
+#               a
+#               /\
+#               b c
+# Inorder is b a c
 def print_condition_inorder(tree):
     if tree.isLeaf:
         print(str(tree.region_id), tree.data)
@@ -58,6 +59,7 @@ def print_condition_inorder(tree):
     print_condition_inorder(tree.right_region)
 
 
+# Test case for building the tree without any pruning, bagging or feature bagging.
 def case_1_build_tree():
     train_data, test_data = get_data()
     expected = [d[0] for d in test_data]
@@ -66,14 +68,14 @@ def case_1_build_tree():
     build_tree(root, input_features)
     actual = [predict(root, row) for row in test_data]
     calculate_mse(actual=actual, expected=expected)
-    print('Most important feature is :' + get_name_for_id(root.split_feature_id))
-    print('**********Preorder traversal of tree************')
-    print_condition_preorder(root)
-    print('**********Inorder traversal of tree************')
-    print_condition_inorder(root)
+    # print('Most important feature is :' + get_name_for_id(root.split_feature_id))
+    # print('**********Preorder traversal of tree************')
+    # print_condition_preorder(root)
+    # print('**********Inorder traversal of tree************')
+    # print_condition_inorder(root)
 
 
-
+# Test case for building the tree with pruning.
 def case_2_build_tree_with_pruning():
     x = []
     y = []
@@ -89,20 +91,21 @@ def case_2_build_tree_with_pruning():
         actual = [predict(root, row) for row in test_data]
         y.append(calculate_mse(actual=actual, expected=expected))
         x.append(a)
-        print('Most important feature is :' + get_name_for_id(root.split_feature_id))
+        # print('Most important feature is :' + get_name_for_id(root.split_feature_id))
 
     # mpl.plot(x, y)
     # mpl.show()
-    print('Most important feature is :' + get_name_for_id(root.split_feature_id))
-    print('**********Preorder traversal of tree************')
-    print_condition_preorder(root)
-    print('**********Inorder traversal of tree************')
-    print_condition_inorder(root)
+    # print('Most important feature is :' + get_name_for_id(root.split_feature_id))
+    # print('**********Preorder traversal of tree************')
+    # print_condition_preorder(root)
+    # print('**********Inorder traversal of tree************')
+    # print_condition_inorder(root)
 
 
+# Test case for building the tree with bagging, randomly choosing data points from the training data.
 def case_3_build_tree_with_bagging():
-    number_of_samples = 100
-    number_of_points_in_each_sample = 100
+    number_of_samples = 50
+    number_of_points_in_each_sample = 50
     train_data, test_data = get_data(for_boot_strapping=True, number_of_points_in_each_sample = number_of_points_in_each_sample, number_of_samples = number_of_samples)
     expected = [d[0] for d in test_data]
     actual = []
@@ -125,10 +128,11 @@ def case_3_build_tree_with_bagging():
     print('Most important feature is :' + str(map(get_name_for_id, m.mode)) + '. No. of times chosen: ' + str(m.count))
 
 
-
+# Test case for building the tree for random forest, randomly choosing data points from the training data and
+# also features.
 def case_4_build_tree_for_random_forest():
-    number_of_features = 5
-    number_of_trees = 50
+    number_of_features = 8
+    number_of_trees = 100
     train_data, test_data = get_data(for_boot_strapping=True, number_of_points_in_each_sample=100, number_of_samples=number_of_trees)
     expected = [d[0] for d in test_data]
     actual = []
@@ -153,9 +157,10 @@ def case_4_build_tree_for_random_forest():
 # print('Most important feature is :' + str(map(get_name_for_id, m.mode)) + '. No. of times chosen: ' + str(m.count))
 
 
-# case_1_build_tree()
-# case_2_build_tree_with_pruning()
-# case_3_build_tree_with_bagging()
+# Calling the test cases
+case_1_build_tree()
+case_2_build_tree_with_pruning()
+case_3_build_tree_with_bagging()
 case_4_build_tree_for_random_forest()
-#
+
 

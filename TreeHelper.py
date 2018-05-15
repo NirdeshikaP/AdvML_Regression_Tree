@@ -4,6 +4,7 @@ feature_id_name_dict = {"Sale":0, "CompPrice": 1, "Income": 2,	"Advertising": 3,
 
 
 # Pre-process to replace Bad with 0, Medium with 1 and Good with 2.
+# Pre-process to replace Yes with 1 and No with 0.
 def convertors():
     shelvloc_to_int = {'"Bad"': 0.0, '"Medium"': 1.0, '"Good"': 2.0}
     yes_no_int = {'"Yes"': 1.0, '"No"': 0.0}
@@ -17,11 +18,15 @@ def get_name_for_id(feature_id):
             return r
 
 
+# Read the csv and apply the pre-processing.
 def read_csv():
     data = np.genfromtxt('Carseats.csv', delimiter=',', names=True, converters={6: lambda s: convertors()[0].get(s), 9: lambda s: convertors()[1].get(s), 10: lambda s: convertors()[1].get(s)})
     return data
 
 
+# Get data by reading the csv. This provides an option to read all the data into one or
+# if for_boot_strapping is set to True, then it returns only those number of points and
+# number_of_samples number of sets of such points.
 def get_data(for_boot_strapping=False, number_of_points_in_each_sample=0, number_of_samples=0):
     data = read_csv()
     np.random.seed(10)
@@ -37,6 +42,7 @@ def get_data(for_boot_strapping=False, number_of_points_in_each_sample=0, number
         return train_data, test_data
 
 
+# Calculate RSS by taking the sum of the squares of the difference between expected and actual values.
 def calc_rss(y_values):
     rss = 0
     y_hat = sum(y_values)/len(y_values) if len(y_values) > 0 else 0
@@ -47,6 +53,8 @@ def calc_rss(y_values):
     return rss
 
 
+# Calculate RSS by taking the sum of the squares of the difference between expected and actual values
+# and also add a penalty term which is equal to alpha * number_of_leaves
 def calc_rss_with_pruning(y_values, alpha, number_of_leaves):
     rss = 0
     y_hat = sum(y_values)/len(y_values) if len(y_values) > 0 else 0
@@ -57,19 +65,8 @@ def calc_rss_with_pruning(y_values, alpha, number_of_leaves):
     return rss
 
 
-# TODO: I think this is not required. Remove afterwards.
-# Making it a dictionary and extract feature values and y_values i.e. Sales
-def get_feature_values(train_data):
-    feature_values = {}
-
-    for feature_name in train_data.dtype.names:
-        feature_values[feature_name] = train_data[feature_name]
-
-    y_values = feature_values.pop('Sales')
-
-    return feature_values, y_values
-
-
+# For each feature and point in the features, split the node and select the feature and point that gives
+# the minimum RSS. Split the node only if after splitting, the RSS decreases.
 def find_split_point(data, features, with_pruning=False, alpha=0.0, number_of_leaves=0):
     rss = {}
     y_values = [row[0] for row in data]
