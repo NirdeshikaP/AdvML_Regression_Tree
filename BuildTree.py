@@ -1,7 +1,9 @@
-from RegressionTree import *
+from TreeHelper import *
 from Region import Region
 
 
+# Get the features needed to estimate "Sales" If for_random_forests is set to True, it randomly selects the number of
+# features = number_of_features.
 def get_input_features(for_random_forests=False, number_of_features=10):
     input_features = feature_id_name_dict.values()
     input_features.remove(0)
@@ -9,11 +11,8 @@ def get_input_features(for_random_forests=False, number_of_features=10):
         input_features = np.random.choice(input_features, number_of_features)
     return input_features
 
-#
-# y_values = [row[0] for row in train_data]
-# root_rss = calc_rss(y_values)
-# root = Region(data=train_data, rss=root_rss)
 
+# The root contains all the data initially which is split in further steps. It also contains RSS as its property.
 def build_root(data):
     y_values = [row[0] for row in data]
     root_rss = calc_rss(y_values)
@@ -21,11 +20,15 @@ def build_root(data):
     return root
 
 
+# It repeatedly splits the root node checking all the split points that are possible with the "input_features" and
+# if the parent node's RSS is greater than the sum of children's RSS. If with_pruning is set to True,
+# then RSS is calculated with an additional penalty term = alpha * number of leaves at that point.
+# It also replaces the data in the leaves with the mean of its "Sales" values.
 def build_tree(root, input_features, with_pruning=False, alpha=0.0):
     leaves = []
     leaves.append(root)
 
-    while len(leaves) < 30:
+    while len(leaves) < 15:
         current_leaves = leaves[:]  # current_leaves = leaves does not work because it copies reference and changes made to leaves are shown in current_leaves as well.
         temp_rss_reduction = 0
         split_region = None
